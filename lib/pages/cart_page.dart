@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:cart_app/cubit/cart_cubit.dart';
+import 'package:cart_app/cubit/carrito_cubit.dart';
+import 'package:cart_app/pages/checkout_page.dart';
 import 'package:cart_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,48 +14,88 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  double total = 0.0;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final cartCubit = context.read<CartCubit>().cart;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mi carrito'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartCubit.length,
-              itemBuilder: (context, index) {
-                return CartItem(product: cartCubit[index]);
-              },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: context.watch<CarritoCubit>().state.isEmpty
+          ? const Center(child: Text('El carrito está vacío'))
+          : Column(
               children: [
-                const Text(
-                  'Total:',
-                  style: TextStyle(fontSize: 20.0),
+                Expanded(
+                  child: BlocBuilder<CarritoCubit, List<Map<String, dynamic>>>(
+                    builder: (context, state) {
+                      return ListView.builder(
+                        itemCount: state.length,
+                        itemBuilder: (context, index) {
+                          return Dismissible(
+                            key: Key(state[index]['product'].id.toString()),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) {
+                              context
+                                  .read<CarritoCubit>()
+                                  .removeProduct(state[index]['product']);
+                            },
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
+                            ),
+                            child: CartItem(product: state[index]['product']),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-                Text(
-                  '\$${context.read<CartCubit>().getTotal().toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 20.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Total:',
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+                      Text(
+                        '\$${context.watch<CarritoCubit>().getTotal().toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 20.0),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const CheckoutPage(),
+                              ),
+                            );
+                          },
+                          child: const Text('Pagar'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('Checkout'),
-          ),
-        ],
-      ),
     );
   }
 }

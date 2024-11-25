@@ -11,46 +11,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isGridViewSelected = true;
   bool isListViewSelected = false;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              tooltip: 'Grilla',
-              onPressed: () {
-                setState(() {
-                  isGridViewSelected = true;
-                  isListViewSelected = false;
-                });
-              },
-              icon: const Icon(Icons.grid_on_rounded),
-              isSelected: isGridViewSelected,
-            ),
-            IconButton(
-              tooltip: 'Lista',
-              isSelected: isListViewSelected,
-              onPressed: () {
-                setState(() {
-                  isGridViewSelected = false;
-                  isListViewSelected = true;
-                });
-              },
-              icon: const Icon(Icons.list),
-            ),
-          ],
-        ),
-        Container(
-          child: isListViewSelected
-              ? const ProductListView()
-              : const ProductGridView(),
-        )
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Carrito App'),
+        actions: [
+          IconButton(
+            tooltip: 'Grilla',
+            onPressed: () {
+              setState(() {
+                isListViewSelected = false;
+              });
+            },
+            icon: const Icon(Icons.grid_on_rounded),
+            isSelected: isListViewSelected,
+          ),
+          IconButton(
+            tooltip: 'Lista',
+            isSelected: isListViewSelected,
+            onPressed: () {
+              setState(() {
+                isListViewSelected = true;
+              });
+            },
+            icon: const Icon(Icons.list),
+          ),
+          const IconCart(),
+        ],
+      ),
+      body: const Column(
+        children: [
+          // Container(
+          //   child: isListViewSelected
+          //       ? const ProductListView()
+          //       : const ProductGridView(),
+          // )
+          ProductListView(),
+        ],
+      ),
     );
   }
 }

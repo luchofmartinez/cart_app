@@ -6,6 +6,7 @@ class Product {
   String description;
   double price;
   String image;
+
   Product({
     required this.id,
     required this.description,
@@ -18,6 +19,7 @@ class Product {
     String? description,
     double? price,
     String? image,
+    int? quantity,
   }) {
     return Product(
       id: id ?? this.id,
@@ -52,7 +54,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, description: $description, price: $price, image: $image)';
+    return 'Product(id: $id, description: $description, price: $price, image: $image )';
   }
 
   @override
